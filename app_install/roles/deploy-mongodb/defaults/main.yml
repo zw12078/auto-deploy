@@ -1,0 +1,12 @@
+---
+# defaults file for deploy-mongodb
+
+mongodb_url: http://downloads.mongodb.org/linux/mongodb-linux-x86_64-3.4.6.tgz?_ga=2.246476740.1107387516.1520822173-80432491.1520586644
+tarball_name: mongodb-linux-x86_64-3.4.6
+
+install_dir: /data/mongodb
+config_port: 21000
+shard1_port: 27001
+shard2_port: 27002
+shard3_port: 27003
+mongos_port: 20000

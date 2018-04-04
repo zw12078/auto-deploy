@@ -1,0 +1,18 @@
+## 配置文件内容
+pidfilepath = {{ install_dir }}/config/log/configsrv.pid
+dbpath = {{ install_dir }}/config/data
+logpath = {{ install_dir }}/config/log/congigsrv.log
+logappend = true
+ 
+bind_ip = 0.0.0.0
+port = {{ config_port }}
+fork = true
+ 
+#declare this is a config db of a cluster;
+configsvr = true
+
+#副本集名称
+replSet=configs
+ 
+#设置最大连接数
+maxConns=20000

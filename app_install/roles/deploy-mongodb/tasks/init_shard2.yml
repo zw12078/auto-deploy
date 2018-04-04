@@ -1,0 +1,24 @@
+---
+- name: 初始化分片shard2 | 生成配置文件. 
+  template: src=init-shard2/shard2.conf.j2   
+            dest={{ install_dir }}/conf/shard2.conf
+
+- name: 初始化分片shard2 | 配置systemd.
+  template: src=init-shard2/mongodb-shard2.service.j2  
+            dest=/usr/lib/systemd/system/mongodb-shard2.service
+
+- name: 初始化分片shard2 | 注册systemd.
+  shell: systemctl daemon-reload
+
+- name: 初始化分片shard2 | 启动shard2分片服务
+  service: name=mongodb-shard2    state=started
+
+- name: 初始化分片shard2 | 生成shard2初始化文件
+  template: src=init-shard2/reset_shard2.j2 dest=/tmp/reset_shard2.js
+  tags: test111
+
+- name: 初始化分片shard2 | 初始化分片shard2
+  shell: /data/mongodb/bin/mongo localhost:{{ shard2_port }}/admin /tmp/reset_shard2.js
+  delegate_to: '{{ item }}'
+  with_items:  '{{ groups.node2 }}'
+  tags: test222

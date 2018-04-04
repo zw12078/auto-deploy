@@ -1,0 +1,23 @@
+- name: 安装mongodb..
+  include: install_mongodb.yml
+  tags: install 
+
+- name: 初始化配置服务器
+  include: init_config.yml
+  tags: init config service
+
+- name: 配置分片副本集shard1
+  include: init_shard1.yml
+  tags: init shard1
+
+- name: 配置分片副本集shard2
+  include: init_shard2.yml
+  tags: init shard2
+
+- name: 配置分片副本集shard3
+  include: init_shard3.yml
+  tags: init shard3
+
+- name: 配置路由服务mongos
+  include: route_service.yml
+  tags: config route

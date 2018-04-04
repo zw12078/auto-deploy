@@ -1,0 +1,15 @@
+config = {
+    _id : "configs",
+      members : [
+        {% for host in groups['nodes'] %}
+        {% if not loop.last %}
+        {_id : {{ loop.index0 }}, host : "{{ host }}:21000" },
+        {% else %}
+        {_id : {{ loop.index0 }}, host : "{{ host }}:21000" }
+        {% endif %}
+        {% endfor %}
+      ]
+}
+
+rs.initiate(config)
+printjson(rs.status())

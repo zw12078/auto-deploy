@@ -1,0 +1,17 @@
+config = {
+    _id : "shard3",
+      members : [
+        {% for host in groups['nodes'] %}
+        {% if  loop.first %}
+        {_id : {{ loop.index0 }}, host : "{{ host }}:27003"},
+        {% elif not loop.first and not loop.last %}
+        {_id : {{ loop.index0 }}, host : "{{ host }}:27003",arbiterOnly: true },
+        {% else %}
+        {_id : {{ loop.index0 }}, host : "{{ host }}:27003"}
+        {% endif %}
+        {% endfor %}
+      ]
+}
+
+rs.initiate(config)
+printjson(rs.status())

@@ -1,0 +1,17 @@
+{% for host in groups['nodes'] %}
+{% set lens = loop.length %}
+sh.addShard("shard{{ loop.index }}/{% set j = loop.index %}{% for i in range(lens) %}{{ groups['nodes'][i] }}:2700{{j}}{% if loop.last %}{% else %},{% endif %}{% endfor %}")
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+     

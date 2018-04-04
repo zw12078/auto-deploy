@@ -1,0 +1,54 @@
+---
+- name: 开始安装bugzilla依赖环境...
+  shell : yum -y install httpd mod_ssl mairadb-server mysql php-mysql gcc perl* mod_perl-devel MySQL-python expect
+
+- name: 准备mariadb配置文件...
+  template: src=my.cnf.j2 dest=/etc/my.cnf
+
+- name : 更改mariadb数据目录权限
+  file: path=/data  owner=mysql  state=directory
+
+- name: 启动mariadb、httpd
+  service: name={{ item }}   state=started    enabled=yes
+  with_items:
+    - httpd
+    - mariadb
+
+- name: 修改数据库密码;
+  mysql_user: name={{ mysql_user}} password={{ mysql_pass}}  priv=*.*:ALL
+  register: mysql
+  ignore_errors: True
+
+- name: 为bugzilla创建数据库;
+  mysql_db: name={{ mysql_db }} login_user={{ mysql_user }}
+            login_password={{ mysql_pass }} state=present
+  register: mysql
+  ignore_errors: True
+
+- name: 开始下载bugzilla...
+  unarchive: src={{ item.bug_file }} dest={{ item.software_dest }}  owner=root group=apache 
+  with_items:
+    - { bug_file: "bugzilla-5.0.3.tar.gz", software_dest: "/var/www/html/"}
+    - { bug_file: "lib.tar.gz", software_dest: "/var/www/html/bugzilla-5.0.3/"}
+    - { bug_file: "zh-CN.tar.gz", software_dest: "/var/www/html/bugzilla-5.0.3/template/"}
+
+- name: 开始安装bugzilla...
+  shell: |
+    mv /var/www/html/bugzilla-5.0.3  /var/www/html/bugzilla
+    cd /var/www/html/bugzilla
+    perl install-module.pl --all
+  ignore_errors: True
+
+- name: 开始准备配置文件
+  template: src={{ item.file_name }} dest={{ item.dest_path }}
+  with_items:
+    - { file_name: "localconfig" , dest_path: "/var/www/html/bugzilla/localconfig" }
+    - { file_name: "bugzilla.j2" , dest_path: "/etc/httpd/conf.d/bugzilla.conf" }
+
+- name: 配置bugzilla管理员信息;
+  script: config_bugzilla.sh  
+
+- name: 配置邮件服务器,
+  template: src="params.j2" dest=/var/www/html/bugzilla/data/params.json
+  notify: 重启httpd
+

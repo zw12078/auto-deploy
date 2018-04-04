@@ -1,0 +1,25 @@
+---
+- name: 初始化配置服务 | 生成配置文件.
+  template: src=config-service/config.conf.j2   dest=/data/mongodb/conf/config.conf
+  tags: install config
+
+- name: 初始化配置服务 |配置systemd服务.
+  template: src=config-service/mongodb-config.service.j2    
+            dest=/usr/lib/systemd/system/mongodb-config.service
+
+- name: 初始化配置服务 |注册systemd.
+  shell: systemctl daemon-reload
+
+- name: 初始化配置服务 |启动mongodb配置服务.
+  service: name=mongodb-config state=started
+
+- name: 初始化配置服务 |复制初始化文件.
+  template: src=config-service/reset_init.j2 dest=/tmp/reset_init.js
+  tags: test
+
+- name: 初始化配置服务 |初始化配置服务
+  shell: /data/mongodb/bin/mongo --port "{{ config_port }}" /tmp/reset_init.js
+  delegate_to: '{{ item }}'
+  with_items:  '{{ groups.node1 }}'
+  tags: test1
+

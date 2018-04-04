@@ -1,0 +1,17 @@
+10.100.101.54 ansible_user=root  ansible_password=123456
+10.100.102.54 ansible_user=root  ansible_password=123456
+10.100.103.54 ansible_user=root  ansible_password=123456
+
+[nodes]
+10.100.101.54
+10.100.102.54
+10.100.103.54
+
+[node1]
+10.100.101.54
+
+[node2]
+10.100.102.54
+
+[node3]
+10.100.103.54

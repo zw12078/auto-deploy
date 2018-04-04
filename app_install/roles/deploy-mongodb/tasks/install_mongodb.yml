@@ -1,0 +1,40 @@
+---
+
+- name: 安装mongodb | 解压tarball到预安装服务器.
+  unarchive: src=roles/deploy-mongodb/files/{{ tarball_name }}.tgz dest=/tmp/
+             creates=/tmp/{{ tarball_name }}
+  tags: unzip tarball
+
+# - name: 安装mongodb | 解压tarball到预安装服务器.
+#   copy: src=mongodb-linux-x86_64-3.4.6.tgz  dest=/tmp/mongodb-linux-x86_64-3.4.6.tgz
+
+# - name: 安装mongodb | 解压tarball到预安装服务器.
+#   shell: tar -xf mongodb-linux-x86_64-3.4.6.tgz chdir=/tmp
+
+- name: 安装mongodb | 创建mongodb数据目录.
+  file: path={{install_dir}}{{ item }}  state=directory
+  with_items: 
+      - /conf
+      - /mongos/log
+      - /config/data
+      - /config/log
+      - /shard1/data
+      - /shard1/log
+      - /shard2/data
+      - /shard2/log
+      - /shard3/data
+      - /shard3/log
+  tags: create dir
+  
+- name: 安装mongodb | 移动解压文件到安装目录.
+  shell: cp -r /tmp/{{ tarball_name }}/* {{ install_dir }}
+  
+
+- name: 安装mongodb | 配置环境变量.
+  lineinfile: dest=/etc/profile  
+              line="export MONGODB_HOME=/data/mongodb 
+                    \nexport PATH=$MONGODB_HOME/bin:$PATH"
+  tags: config profile
+
+- name: 安装mongodb | source环境变量
+  shell: source /etc/profile

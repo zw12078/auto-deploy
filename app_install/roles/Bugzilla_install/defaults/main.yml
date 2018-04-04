@@ -1,0 +1,15 @@
+mysql_dir: data
+mysql_user: root
+mysql_pass: qwe12345
+mysql_db: bugs
+
+# SMTP SERVER
+bugzilla_email: bugzilla@lingyi365.com
+bugzilla_pass: bugzilla2017
+mail_server: mail.lingyi365.com
+
+#manager_user
+
+manager_email: zhangwei@lingiy365.com
+manager_user: admin
+manager_pass: qwe12345

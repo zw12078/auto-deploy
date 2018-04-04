@@ -1,0 +1,21 @@
+172.18.113.214  ansible_user=root ansible_password=123456
+172.18.113.216  ansible_user=root ansible_password=123456
+172.18.113.218  ansible_user=root ansible_password=123456
+172.18.113.222  ansible_user=root ansible_password=123456
+172.18.113.224  ansible_user=root ansible_password=123456
+172.18.113.225  ansible_user=root ansible_password=123456
+172.18.113.230  ansible_user=root ansible_password=123456
+[redis-master]  
+172.18.113.230
+
+
+[redis-slave]
+172.18.113.214
+172.18.113.216
+172.18.113.218
+
+
+[redis-sentinel]
+172.18.113.222 redis_sentinel=True
+172.18.113.224 redis_sentinel=True
+172.18.113.225 redis_sentinel=True

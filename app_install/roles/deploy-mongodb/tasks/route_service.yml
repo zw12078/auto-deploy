@@ -1,0 +1,22 @@
+---
+- name: 配置路由服务 | 生成配置文件
+  template: src=route-service/mongos.conf.j2   dest={{ install_dir }}/conf/mongos.conf
+
+- name: 配置路由服务 | 配置systemd
+  template: src=route-service/mongodb-mongos.service.j2  dest=/usr/lib/systemd/system/mongodb-mongos.service
+
+- name: 配置路由服务 | 注册systemd
+  shell: systemctl daemon-reload
+
+- name: 配置路由服务 | 启动mongos路由服务.
+  service: name=mongodb-mongos   state=started
+
+- name: 配置路由服务 | 生成路由分片文件.
+  template: src=route-service/reset-mongos.j2  dest=/tmp/reset-mongos.js
+  
+
+- name: 配置路由服务 | 启动分片服务.
+  shell: /data/mongodb/bin/mongo localhost:{{ mongos_port }}/admin /tmp/reset-mongos.js
+  delegate_to: '{{ item }}'
+  with_items:  '{{ groups.node1 }}'
+  tags: test333

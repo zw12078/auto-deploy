@@ -1,0 +1,24 @@
+---
+- name: 初始化分片shard3 | 生成配置文件. 
+  template: src=init-shard3/shard3.conf.j2   
+            dest={{ install_dir }}/conf/shard3.conf
+
+- name: 初始化分片shard3 | 配置systemd.
+  template: src=init-shard3/mongodb-shard3.service.j2  
+            dest=/usr/lib/systemd/system/mongodb-shard3.service
+
+- name: 初始化分片shard3 | 注册systemd.
+  shell: systemctl daemon-reload
+
+- name: 初始化分片shard3 | 启动shard3分片服务
+  service: name=mongodb-shard3    state=started
+
+- name: 初始化分片shard3 | 生成shard3初始化文件
+  template: src=init-shard3/reset_shard3.j2 dest=/tmp/reset_shard3.js
+  
+
+- name: 初始化分片shard3 | 初始化分片shard3
+  shell: /data/mongodb/bin/mongo localhost:{{ shard3_port }}/admin /tmp/reset_shard3.js
+  delegate_to: '{{ item }}'
+  with_items:  '{{ groups.node3 }}'
+  tags: test222
